@@ -1,283 +1,81 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SCIENCE OS</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;padding:16px;background:#06101e;color:#e8faff;font-family:Arial}
-main{max-width:520px;margin:auto}
-h1{text-align:center;color:#35d9ff;letter-spacing:3px}
-h2{color:#48dfff}
-.card{background:#102238;border:1px solid #1b5872;border-radius:16px;padding:16px;margin:13px 0}
-button,input,textarea{width:100%;padding:13px;margin-top:9px;border-radius:10px;font-size:16px}
-button{background:#16bce5;color:#04121c;border:0;font-weight:bold}
-input,textarea{background:#07111f;color:white;border:1px solid #28728d}
-.secondary{background:#183b53;color:white}
-.menu{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.menu button{min-height:76px}
-.hidden{display:none!important}
-.small{color:#9bb8c8;font-size:13px}
-.secret{overflow-wrap:anywhere;color:#54e7ff}
-.resource{display:block;background:#071a2b;padding:13px;margin-top:9px;border-radius:10px;color:#61e2ff;text-decoration:none}
-textarea{min-height:150px}
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<header>
+  <div class="topline">
+    <h1>✦ SCIENCE OS</h1>
+    <div class="topbtns">
+      <button class="bell" onclick="openPage('notifications')" title="Уведомления">🔔<span id="notifBadge" class="badge hidden">0</span></button>
+    </div>
+  </div>
+  <small>Домашняя научная операционная система · <span id="cloudStatus">проверка облака…</span></small>
+</header>
 <main>
-<h1>SCIENCE OS</h1>
+  <section id="register" class="panel hidden">
+    <h2>Создание гостевого профиля</h2>
+    <p><small>Гостевой профиль работает полностью офлайн. Позже его можно привязать к облаку в «Аккаунте».</small></p>
+    <input id="nickname" placeholder="Твой никнейм" maxlength="24">
+    <button onclick="register()">Создать аккаунт</button>
+    <button class="ghost" onclick="openPage('auth')">У меня есть облачный аккаунт</button>
+  </section>
 
-<section id="create" class="card hidden">
-<h2>Создать аккаунт</h2>
-<input id="nickname" maxlength="20" placeholder="Твой ник">
-<button onclick="createAccount()">Войти как гость</button>
-</section>
+  <section id="home" class="hidden">
+    <div class="panel">
+      <h2 id="welcome">Главное меню</h2>
+      <p id="homeSub">Выбери свой научный отдел.</p>
+    </div>
+    <div class="grid menu">
+      <button onclick="openPage('messages')">💬  Сообщения</button>
+      <button onclick="openPage('friends')">👥  Друзья</button>
+      <button onclick="openPage('diary')">📓  Дневник</button>
+      <button onclick="openPage('browser')">🌐  Браузер</button>
+      <button onclick="openPage('games')">🎮  Игры</button>
+      <button onclick="openPage('modlib')">📚  Библиотека модов</button>
+      <button onclick="openPage('mods')">🧩  Мастерская модов</button>
+      <button onclick="openPage('achievements')">🏆  Достижения</button>
+      <button onclick="openPage('departments')">🧪  Отделы</button>
+      <button onclick="openPage('lab')">🔬  Лаборатория</button>
+      <button onclick="openPage('science')">🪐  Наука</button>
+      <button onclick="openPage('astro')">🌌  Астрономия</button>
+      <button onclick="openPage('profile')">👤  Профиль</button>
+      <button onclick="openPage('settings')">⚙️  Аккаунт</button>
+    </div>
+  </section>
 
-<section id="home" class="hidden">
-<div class="card">
-<h2>Главное меню</h2>
-<p>Добро пожаловать, <b id="nick"></b>!</p>
-</div>
-<div class="menu">
-<button onclick="openPage('messages')">💬 Сообщения</button>
-<button onclick="openPage('games')">🎮 Игры</button>
-<button onclick="openPage('diary')">📓 Дневники</button>
-<button onclick="openPage('friends')">👥 Друзья</button>
-<button onclick="openPage('lab')">🧪 Лаборатория</button>
-<button onclick="openPage('mods')">🧩 Моды</button>
-<button onclick="openPage('science')">🌐 Научный центр</button>
-<button onclick="openPage('settings')">⚙️ Аккаунт</button>
-</div>
-</section>
+  <section id="auth" class="panel hidden">
+    <button onclick="backHome()" class="ghost">← Назад</button>
+    <h2>Облачный аккаунт</h2>
+    <p><small>Регистрация и вход идут напрямую в Supabase (email + пароль). Анонимный ключ безопасен для клиента: все данные защищены RLS-политиками.</small></p>
+    <div id="authForm">
+      <input id="authEmail" type="email" placeholder="Email" autocomplete="email">
+      <input id="authPass" type="password" placeholder="Пароль (мин. 6 символов)" autocomplete="current-password">
+      <input id="authNick" placeholder="Никнейм (только при регистрации)" maxlength="24">
+      <div class="grid">
+        <button onclick="cloudSignUp()">Зарегистрироваться</button>
+        <button onclick="cloudSignIn()">Войти</button>
+      </div>
+      <button class="ghost" onclick="Cloud.googleLogin()">🔵 Войти через Google</button>
+      <p><small>Google-вход заработает, когда в Supabase будет включён провайдер Google (Authentication → Providers). До этого кнопка честно покажет ошибку Supabase.</small></p>
+    </div>
+    <div id="authState"></div>
+  </section>
 
-<section id="page" class="hidden">
-<div class="card">
-<button class="secondary" onclick="backHome()">← Назад в меню</button>
-<h2 id="pageTitle"></h2>
-<div id="pageContent"></div>
-</div>
-</section>
+  <section id="page" class="hidden">
+    <button onclick="backHome()" class="ghost">← Назад</button>
+    <h2 id="pageTitle"></h2>
+    <div id="content"></div>
+  </section>
 </main>
-
-<script>
-const KEY="science_os_guest_v1";
-const MODKEY="science_os_mods_v1";
-let account=null;
-
-function createAccount(){
- const nickname=document.getElementById("nickname").value.trim();
- if(!nickname){alert("Введи ник!");return;}
- account={nickname,id:"SCI-"+crypto.randomUUID().toUpperCase()};
- localStorage.setItem(KEY,JSON.stringify(account));
- showHome();
-}
-
-function showHome(){
- document.getElementById("create").classList.add("hidden");
- document.getElementById("page").classList.add("hidden");
- document.getElementById("home").classList.remove("hidden");
- document.getElementById("nick").textContent=account.nickname;
-}
-
-function openPage(name){
- document.getElementById("home").classList.add("hidden");
- document.getElementById("page").classList.remove("hidden");
-
- const pages={
- messages:["Сообщения",`<p>Научный чат появится после подключения облачной базы.</p>`],
- games:["Научные игры",`
- <p>Какая планета известна своими кольцами?</p>
- <button onclick="answer('Марс')">Марс</button>
- <button onclick="answer('Сатурн')">Сатурн</button>
- <button onclick="answer('Земля')">Земля</button>
- <p id="answer"></p>`],
- diary:["Дневник",`
- <textarea id="entry" placeholder="Твоя научная запись"></textarea>
- <button onclick="saveDiary()">Сохранить</button>
- <div id="entries"></div>`],
- friends:["Друзья",`
- <p>Добавление друзей по нику появится после подключения облачной базы.</p>`],
- lab:["Лаборатория",`
- <button onclick="alert('Астрономия')">🔭 Астрономия</button>
- <button onclick="alert('Метеорология')">🌪️ Метеорология</button>
- <button onclick="alert('Радиоастрономия')">📡 Радиоастрономия</button>`],
- mods:["Моды",`<div id="modArea"></div>`],
- science:["Научный центр",`
- <h3>🔎 Научный поиск</h3>
- <input id="query" placeholder="Поиск в интернете">
- <button onclick="searchWeb()">Искать</button>
- <a class="resource" href="https://ru.wikipedia.org/" target="_blank">📚 Википедия</a>
- <a class="resource" href="https://www.nasa.gov/" target="_blank">🚀 NASA</a>
- <a class="resource" href="https://www.noaa.gov/" target="_blank">🌪️ NOAA</a>
- <a class="resource" href="https://www.esa.int/" target="_blank">🛰️ ESA</a>
- <a class="resource" href="https://www.windy.com/" target="_blank">🌬️ Windy</a>
- <h3>📡 Радиоэфир</h3>
- <a class="resource" href="https://www.websdr.org/" target="_blank">Открыть каталог приёмников</a>
- <a class="resource" href="https://websdr.ewi.utwente.nl:8901/" target="_blank">Открыть приёмник</a>
- <a class="resource" href="https://rx.linkfanel.net/" target="_blank">Карта приёмников</a>`],
- settings:["Аккаунт",`
- <p>Ник: <b id="accountNick"></b></p>
- <p class="small">Твой секретный ID:</p>
- <p class="secret" id="secret"></p>
- <button onclick="copyID()">Скопировать ID</button>
- <button class="secondary" onclick="logout()">Выйти из аккаунта</button>`]
- };
-
- document.getElementById("pageTitle").textContent=pages[name][0];
- document.getElementById("pageContent").innerHTML=pages[name][1];
-
- if(name==="settings"){
- document.getElementById("accountNick").textContent=account.nickname;
- document.getElementById("secret").textContent=account.id;
- }
- if(name==="diary")showDiary();
- if(name==="mods")showMods();
-}
-
-function searchWeb(){
- const q=document.getElementById("query").value.trim();
- if(q)window.open("https://www.google.com/search?q="+encodeURIComponent(q),"_blank");
-}
-
-function answer(v){
- document.getElementById("answer").textContent=
- v==="Сатурн"?"Правильно!":"Попробуй ещё!";
-}
-
-function saveDiary(){
- const value=document.getElementById("entry").value.trim();
- if(!value)return;
- let a=JSON.parse(localStorage.getItem("science_diary")||"[]");
- a.unshift(value);
- localStorage.setItem("science_diary",JSON.stringify(a));
- document.getElementById("entry").value="";
- showDiary();
-}
-
-function showDiary(){
- const a=JSON.parse(localStorage.getItem("science_diary")||"[]");
- const el=document.getElementById("entries");
- el.innerHTML="";
- a.forEach(v=>{
- const p=document.createElement("div");
- p.className="card";
- p.textContent=v;
- el.appendChild(p);
- });
-}
-
-function getMods(){
- try{return JSON.parse(localStorage.getItem(MODKEY)||"[]")}
- catch(e){return []}
-}
-
-function showMods(){
- document.getElementById("modArea").innerHTML=`
- <button onclick="showLibrary()">📚 Библиотека</button>
- <button onclick="showWorkshop()">🛠️ Мастерская</button>
- <div id="modContent"></div>`;
- showLibrary();
-}
-
-function showLibrary(){
- const area=document.getElementById("modContent");
- area.innerHTML="<h3>Библиотека модов</h3>";
- const mods=getMods();
- if(!mods.length){
- area.innerHTML+="<p class='small'>Пока нет модов.</p>";
- return;
- }
- mods.forEach((m,i)=>{
- const c=document.createElement("div");
- c.className="card";
- const h=document.createElement("h3");
- h.textContent=m.name;
- const d=document.createElement("p");
- d.textContent=m.description;
- const b=document.createElement("button");
- b.textContent="Посмотреть код";
- b.onclick=()=>viewMod(i);
- const del=document.createElement("button");
- del.className="secondary";
- del.textContent="Удалить";
- del.onclick=()=>{
- const a=getMods();a.splice(i,1);
- localStorage.setItem(MODKEY,JSON.stringify(a));showLibrary();
- };
- c.append(h,d,b,del);area.append(c);
- });
-}
-
-function showWorkshop(){
- document.getElementById("modContent").innerHTML=`
- <h3>Мастерская</h3>
- <button onclick="newMod()">＋ Создать мод</button>
- <div id="editor"></div>`;
-}
-
-function newMod(){
- document.getElementById("editor").innerHTML=`
- <input id="modName" placeholder="Название мода">
- <input id="modDesc" placeholder="Описание">
- <textarea id="modCode" placeholder="// Код JavaScript"></textarea>
- <button onclick="saveMod()">Сохранить мод</button>
- <p class="small">Запуск кода пока отключён.</p>`;
-}
-
-function saveMod(){
- const name=document.getElementById("modName").value.trim();
- const code=document.getElementById("modCode").value;
- if(!name||!code.trim()){alert("Заполни название и код!");return;}
- const a=getMods();
- a.push({name,description:document.getElementById("modDesc").value,code});
- localStorage.setItem(MODKEY,JSON.stringify(a));
- alert("Сохранено!");
- showLibrary();
-}
-
-function viewMod(i){
- const m=getMods()[i];
- const area=document.getElementById("modContent");
- area.innerHTML="";
- const back=document.createElement("button");
- back.textContent="← Библиотека";
- back.onclick=showLibrary;
- const h=document.createElement("h3");
- h.textContent=m.name;
- const code=document.createElement("pre");
- code.style.whiteSpace="pre-wrap";
- code.textContent=m.code;
- area.append(back,h,code);
-}
-
-function copyID(){
- navigator.clipboard.writeText(account.id)
- .then(()=>alert("ID скопирован!"))
- .catch(()=>alert("Не удалось скопировать. Перепиши ID вручную."));
-}
-
-function logout(){
- localStorage.removeItem(KEY);
- location.reload();
-}
-
-function backHome(){showHome();}
-
-try{
- const saved=localStorage.getItem(KEY);
- if(saved){
- account=JSON.parse(saved);
- if(account&&account.nickname&&account.id)showHome();
- else throw Error("bad account");
- }else{
- document.getElementById("create").classList.remove("hidden");
- }
-}catch(e){
- localStorage.removeItem(KEY);
- document.getElementById("create").classList.remove("hidden");
-}
-</script>
+<div id="toast" class="toast hidden"></div>
+<div id="callUi" class="modal hidden"></div>
+<script src="js/env.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
