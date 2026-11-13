@@ -1,0 +1,50 @@
+*{box-sizing:border-box}
+body{margin:0;background:#061323;color:#e9f7ff;font-family:Arial}
+header{padding:18px;background:#0b2038;border-bottom:1px solid #24516c}
+h1{color:#51dfff;font-size:23px;margin:0}
+h2,h3{color:#51dfff}
+.topline{display:flex;justify-content:space-between;align-items:center}
+.topbtns button{position:relative}
+main{padding:15px;max-width:900px;margin:auto}
+.panel{background:#10263e;border:1px solid #24516c;border-radius:14px;padding:15px;margin:12px 0}
+button{background:#123d5c;color:white;border:1px solid #32789b;border-radius:10px;padding:12px;margin:4px;font-size:15px}
+button:active{background:#087da5}
+button.ghost{background:transparent;border-color:#24516c;color:#9abbd0}
+button.danger{border-color:#c0392b;color:#ff9a8a}
+button:disabled{opacity:.45}
+input,textarea,select{width:100%;padding:12px;margin:6px 0;background:#07182a;color:white;border:1px solid #32789b;border-radius:9px;font-size:15px}
+textarea{min-height:100px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.hidden{display:none}
+.menu button{min-height:70px}
+iframe{width:100%;height:55vh;background:white;border:0;border-radius:10px}
+.tabs{display:flex;overflow:auto}
+.tab{white-space:nowrap}
+.active{background:#087da5}
+small{color:#9abbd0}
+pre{white-space:pre-wrap;word-break:break-word;background:#07182a;border:1px solid #24516c;border-radius:10px;padding:10px}
+.bell{font-size:18px}
+.badge{position:absolute;top:-6px;right:-6px;background:#e74c3c;color:#fff;font-size:11px;border-radius:10px;padding:1px 6px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#087da5;color:#fff;padding:10px 18px;border-radius:20px;font-size:14px;z-index:99;max-width:90vw}
+.notice{border:1px dashed #32789b;border-radius:10px;padding:10px;color:#9abbd0;font-size:14px}
+.ok{color:#7be0a6}.err{color:#ff9a8a}
+.statusline{font-size:12px;color:#9abbd0;margin:4px 0 8px}
+/* чат */
+.chatbox{display:flex;flex-direction:column;gap:8px;max-height:52vh;overflow:auto;background:#07182a;border:1px solid #24516c;border-radius:10px;padding:10px}
+.msg{max-width:80%;padding:8px 12px;border-radius:12px;background:#123d5c;font-size:14px}
+.msg.mine{align-self:flex-end;background:#087da5}
+.msg .who{font-size:11px;color:#9abbd0;display:block}
+.msg.own .who{color:#cdeffd}
+/* профиль */
+.avatar{font-size:44px;line-height:1}
+.profilecard{display:flex;gap:14px;align-items:center}
+.ach{display:flex;gap:10px;align-items:center;opacity:.45}
+.ach.done{opacity:1;border-color:#087da5}
+.deptcard{opacity:.7}
+.deptcard.mine{opacity:1;border-color:#087da5}
+/* звонок */
+.modal{position:fixed;inset:0;background:rgba(3,10,18,.92);display:flex;align-items:center;justify-content:center;z-index:80}
+.modal.hidden{display:none} /* важное правило: hidden обязан побеждать, иначе невидимая панель перекрывает весь экран */
+.callpanel{width:min(420px,92vw);text-align:center}
+.callpanel button{display:block;width:100%}
