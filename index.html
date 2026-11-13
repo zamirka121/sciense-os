@@ -2,112 +2,82 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SCIENCE OS</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
-body{
- margin:0;background:#07111f;color:#eaf7ff;
- font-family:Arial,sans-serif;min-height:100vh;
- display:flex;justify-content:center;align-items:center;
- padding:20px;
-}
-.panel{
- width:100%;max-width:420px;background:#101f32;
- border:1px solid #174c68;border-radius:22px;
- padding:28px;box-shadow:0 0 35px #00bfff22;
-}
-h1{text-align:center;color:#36d8ff;letter-spacing:3px}
-.sub{text-align:center;color:#91b7c9;margin-bottom:25px}
-input,button{
- width:100%;padding:14px;margin:8px 0;
- border-radius:10px;font-size:16px;
-}
-input{background:#081522;border:1px solid #28516a;color:white}
-button{
- background:#08b9e8;border:0;color:#001522;
- font-weight:bold;cursor:pointer;
-}
-button.secondary{background:#263d55;color:white}
-#status{text-align:center;color:#72e5ff;min-height:24px}
-#account{display:none;text-align:center}
+body{margin:0;background:#07111f;color:#e8faff;font-family:Arial,sans-serif;padding:22px}
+main{max-width:480px;margin:35px auto}
+h1{color:#35d9ff;text-align:center;letter-spacing:3px}
+.card{background:#102238;border:1px solid #1b5872;border-radius:18px;padding:22px;margin-top:20px}
+input,button{width:100%;padding:14px;margin-top:12px;border-radius:10px;font-size:16px}
+input{background:#07111f;color:white;border:1px solid #28728d}
+button{background:#16bce5;color:#04121c;border:0;font-weight:bold}
+.small{color:#9bb8c8;font-size:13px}
+.secret{overflow-wrap:anywhere;color:#54e7ff;font-weight:bold}
+.hidden{display:none}
 </style>
 </head>
 <body>
-<div class="panel">
- <h1>SCIENCE OS</h1>
- <div class="sub">YOUR PERSONAL SCIENCE UNIVERSE</div>
+<main>
+<h1>SCIENCE OS</h1>
+<section class="card" id="create">
+<h2>Создать аккаунт</h2>
+<p class="small">Придумай свой никнейм.</p>
+<input id="nickname" maxlength="20" placeholder="Твой ник">
+<button onclick="createAccount()">Войти как гость</button>
+</section>
 
- <div id="auth">
-  <input id="email" type="email" placeholder="Твоя электронная почта">
-  <input id="password" type="password" placeholder="Пароль">
-  <button onclick="signUp()">Создать аккаунт</button>
-  <button class="secondary" onclick="signIn()">Войти</button>
- </div>
-
- <div id="account">
-  <h2>Добро пожаловать!</h2>
-  <p id="userEmail"></p>
-  <p>SCIENCE OS ONLINE 🚀</p>
-  <button class="secondary" onclick="signOut()">Выйти</button>
- </div>
- <p id="status"></p>
-</div>
+<section class="card hidden" id="home">
+<h2>Добро пожаловать!</h2>
+<p>Твой ник: <b id="nick"></b></p>
+<p class="small">Твой секретный ID для восстановления:</p>
+<p class="secret" id="secret"></p>
+<button onclick="copyID()">Скопировать ID</button>
+<p class="small">Сохрани ID в надёжном месте. Ник виден в приложении, секретный ID никому не показывай.</p>
+<button onclick="logout()">Выйти из аккаунта</button>
+</section>
+</main>
 
 <script>
-const SUPABASE_URL = "https://cpkdvqldersixbvirsk.supabase.co";
-const SUPABASE_KEY = "sb_publishable_-vn2-QIszq5qjiJ8v_R-3Q_hFru3Vdw";
+const KEY="science_os_guest_v1";
 
-const db = window.supabase.createClient(
- SUPABASE_URL,
- SUPABASE_KEY
-);
-
-function message(text){
- document.getElementById("status").textContent=text;
+function showAccount(account){
+ document.getElementById("create").classList.add("hidden");
+ document.getElementById("home").classList.remove("hidden");
+ document.getElementById("nick").textContent=account.nickname;
+ document.getElementById("secret").textContent=account.id;
 }
 
-async function signUp(){
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
- if(!email || password.length<6){
-  message("Введи почту и пароль от 6 символов");
-  return;
- }
- message("Создаём аккаунт...");
- const {data,error}=await db.auth.signUp({email,password});
- if(error){message(error.message);return;}
- if(data.session) showAccount(data.user);
- else message("Проверь почту для подтверждения регистрации!");
+function createAccount(){
+ const nickname=document.getElementById("nickname").value.trim();
+ if(!nickname){alert("Введи ник!");return;}
+ const account={
+  nickname:nickname,
+  id:"SCI-"+crypto.randomUUID().toUpperCase()
+ };
+ localStorage.setItem(KEY,JSON.stringify(account));
+ showAccount(account);
 }
 
-async function signIn(){
- const email=document.getElementById("email").value.trim();
- const password=document.getElementById("password").value;
- message("Выполняем вход...");
- const {data,error}=await db.auth.signInWithPassword({email,password});
- if(error){message(error.message);return;}
- showAccount(data.user);
+function copyID(){
+ const id=document.getElementById("secret").textContent;
+ navigator.clipboard.writeText(id)
+ .then(()=>alert("ID скопирован!"))
+ .catch(()=>alert("Выдели ID и скопируй вручную."));
 }
 
-async function signOut(){
- await db.auth.signOut();
- document.getElementById("account").style.display="none";
- document.getElementById("auth").style.display="block";
- message("Ты вышел из аккаунта");
+function logout(){
+ localStorage.removeItem(KEY);
+ location.reload();
 }
 
-function showAccount(user){
- document.getElementById("auth").style.display="none";
- document.getElementById("account").style.display="block";
- document.getElementById("userEmail").textContent=user.email;
- message("Подключение успешно!");
+try{
+ const saved=localStorage.getItem(KEY);
+ if(saved) showAccount(JSON.parse(saved));
+}catch(e){
+ localStorage.removeItem(KEY);
 }
-
-db.auth.getSession().then(({data})=>{
- if(data.session) showAccount(data.session.user);
-});
 </script>
 </body>
 </html>
