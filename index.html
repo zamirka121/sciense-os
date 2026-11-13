@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SCIENCE OS</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#07111f;color:#eaf7ff;
+ font-family:Arial,sans-serif;min-height:100vh;
+ display:flex;justify-content:center;align-items:center;
+ padding:20px;
+}
+.panel{
+ width:100%;max-width:420px;background:#101f32;
+ border:1px solid #174c68;border-radius:22px;
+ padding:28px;box-shadow:0 0 35px #00bfff22;
+}
+h1{text-align:center;color:#36d8ff;letter-spacing:3px}
+.sub{text-align:center;color:#91b7c9;margin-bottom:25px}
+input,button{
+ width:100%;padding:14px;margin:8px 0;
+ border-radius:10px;font-size:16px;
+}
+input{background:#081522;border:1px solid #28516a;color:white}
+button{
+ background:#08b9e8;border:0;color:#001522;
+ font-weight:bold;cursor:pointer;
+}
+button.secondary{background:#263d55;color:white}
+#status{text-align:center;color:#72e5ff;min-height:24px}
+#account{display:none;text-align:center}
+</style>
+</head>
+<body>
+<div class="panel">
+ <h1>SCIENCE OS</h1>
+ <div class="sub">YOUR PERSONAL SCIENCE UNIVERSE</div>
+
+ <div id="auth">
+  <input id="email" type="email" placeholder="Твоя электронная почта">
+  <input id="password" type="password" placeholder="Пароль">
+  <button onclick="signUp()">Создать аккаунт</button>
+  <button class="secondary" onclick="signIn()">Войти</button>
+ </div>
+
+ <div id="account">
+  <h2>Добро пожаловать!</h2>
+  <p id="userEmail"></p>
+  <p>SCIENCE OS ONLINE 🚀</p>
+  <button class="secondary" onclick="signOut()">Выйти</button>
+ </div>
+ <p id="status"></p>
+</div>
+
+<script>
+const SUPABASE_URL = "https://cpkdvqldersixbvirsk.supabase.co";
+const SUPABASE_KEY = "sb_publishable_-vn2-QIszq5qjiJ8v_R-3Q_hFru3Vdw";
+
+const db = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+function message(text){
+ document.getElementById("status").textContent=text;
+}
+
+async function signUp(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ if(!email || password.length<6){
+  message("Введи почту и пароль от 6 символов");
+  return;
+ }
+ message("Создаём аккаунт...");
+ const {data,error}=await db.auth.signUp({email,password});
+ if(error){message(error.message);return;}
+ if(data.session) showAccount(data.user);
+ else message("Проверь почту для подтверждения регистрации!");
+}
+
+async function signIn(){
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ message("Выполняем вход...");
+ const {data,error}=await db.auth.signInWithPassword({email,password});
+ if(error){message(error.message);return;}
+ showAccount(data.user);
+}
+
+async function signOut(){
+ await db.auth.signOut();
+ document.getElementById("account").style.display="none";
+ document.getElementById("auth").style.display="block";
+ message("Ты вышел из аккаунта");
+}
+
+function showAccount(user){
+ document.getElementById("auth").style.display="none";
+ document.getElementById("account").style.display="block";
+ document.getElementById("userEmail").textContent=user.email;
+ message("Подключение успешно!");
+}
+
+db.auth.getSession().then(({data})=>{
+ if(data.session) showAccount(data.session.user);
+});
+</script>
+</body>
+</html>
