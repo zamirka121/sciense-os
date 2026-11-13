@@ -21,7 +21,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-
+          - name: Check Java
+        run: |
+          java -version
+          javac -version
+          echo "$JAVA_HOME"
       - name: Install Capacitor
         run: |
           npm init -y
